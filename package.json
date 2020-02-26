@@ -1,11 +1,15 @@
 {
-  "name": "mc-ui",
+  "name": "yypUi",
   "version": "0.1.0",
-  "private": true,
+  "description": "基于VUE的UI库",
+  "main": "lib/yypUi.umd.min.js",
+  "keywords": ["yypUi", "UI"],
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lib": "vue-cli-service build --target lib --name yypUi --dest lib packages/index.js"
   },
   "dependencies": {
     "core-js": "^3.6.4",
