@@ -1,13 +1,18 @@
 <template>
     <button
     class="mc-button"
+    :disabled="disabled"
     :class="[
         `mc-button--${type}`,
         {
             'is-round': round
         }
-    ]">
-        <span>
+    ]"
+    @click="handleClick"
+    >
+        <i class="mc-icon-" :class="icon" v-if="icon"></i>
+        <!-- 如果没有传入插槽的时候才显示 -->
+        <span v-if="$slots.default">
             <slot></slot>
         </span>
     </button>
@@ -21,9 +26,22 @@
                 type: String,
                 default: 'default'
             },
+            disabled: {
+                type: Boolean,
+                default: false
+            },
             round: {
                 type: Boolean,
                 default: false
+            },
+            icon: {
+                type: String,
+                default: ''
+            }
+        },
+        methods: {
+            handleClick (e) {
+                this.$emit('click', e); // 向父组件派发一个click事件，e表示携带的参数
             }
         }
     }
@@ -75,5 +93,14 @@
     .is-round {
         border-radius: 20px;
         padding: 12px 23px;
+    }
+    .mc-button [class*=mc-icon-]+span {
+        margin-left: 5px;
+    }
+    .mc-button[disabled] {
+        cursor: default;
+        background: #c9c9c9;
+        border-color: #c9c9c9;
+        color: white;
     }
 </style>

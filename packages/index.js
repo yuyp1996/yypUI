@@ -1,11 +1,13 @@
 // 导入组件
 
 import McButton from './McButton'
+import McDialog from './McDialog'
 
 // 组件列表
 
 const components = [
-    McButton
+    McButton,
+    McDialog
 ];
 
 
