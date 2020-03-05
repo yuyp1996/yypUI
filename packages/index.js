@@ -1,13 +1,15 @@
 // 导入组件
 
-import McButton from './McButton'
-import McDialog from './McDialog'
+import YpButton from './YpButton'
+import YpDialog from './YpDialog'
+import YpDatePicker from './YpDateTimePicker'
 
 // 组件列表
 
 const components = [
-    McButton,
-    McDialog
+    YpButton,
+    YpDialog,
+    YpDatePicker
 ];
 
 
@@ -29,5 +31,7 @@ export default {
     // 导出的对象必须具有 install，才能被 Vue.use() 方法安装
     install,
     // 以下是具体的组件列表
-    McButton
+    YpButton,
+    YpDialog,
+    YpDatePicker
 }

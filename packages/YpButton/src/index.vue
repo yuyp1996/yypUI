@@ -20,7 +20,7 @@
 
 <script>
     export default {
-        name: "McButton",
+        name: "YpButton",
         props: {
             type: {
                 type: String,
@@ -41,6 +41,9 @@
         },
         methods: {
             handleClick (e) {
+                if (this.disabled) {
+                    return;
+                }
                 this.$emit('click', e); // 向父组件派发一个click事件，e表示携带的参数
             }
         }
@@ -51,7 +54,6 @@
     .mc-button {
         box-sizing: border-box;
         outline: none;
-        margin: 0;
         transition: 0.1s;
         font-weight: 500;
         user-select: none;
