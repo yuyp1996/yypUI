@@ -12,7 +12,7 @@ module.exports = {
     chainWebpack: config => {
         config.module
             .rule('js')
-            .include.add(path.resolve(__dirname, 'packages')).end()
+            .include.add(path.resolve(__dirname, 'packages')).add('utils').end()
             .use('babel')
             .loader('babel-loader')
             .tap(options => {

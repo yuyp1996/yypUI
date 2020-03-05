@@ -1,16 +1,16 @@
 <template>
     <button
-    class="mc-button"
+    class="yp-button"
     :disabled="disabled"
     :class="[
-        `mc-button--${type}`,
+        `yp-button--${type}`,
         {
             'is-round': round
         }
     ]"
     @click="handleClick"
     >
-        <i class="mc-icon-" :class="icon" v-if="icon"></i>
+        <i class="yp-icon-" :class="icon" v-if="icon"></i>
         <!-- 如果没有传入插槽的时候才显示 -->
         <span v-if="$slots.default">
             <slot></slot>
@@ -51,7 +51,7 @@
 </script>
 
 <style scoped lang="scss">
-    .mc-button {
+    .yp-button {
         box-sizing: border-box;
         outline: none;
         transition: 0.1s;
@@ -69,25 +69,25 @@
         cursor: pointer;
     }
     // 初级
-    .mc-button--primary {
+    .yp-button--primary {
         color: white;
         background: #5db6fa;
         border-color: #5db6fa;
     }
     // 成功
-    .mc-button--success {
+    .yp-button--success {
         color: white;
         background: #44fa7a;
         border-color: #44fa7a;
     }
     // 警告
-    .mc-button--warning {
+    .yp-button--warning {
         color: white;
         background: #fad02d;
         border-color: #fad02d;
     }
     // 危险
-    .mc-button--danger {
+    .yp-button--danger {
         color: white;
         background: #fa371b;
         border-color: #fa371b;
@@ -96,10 +96,10 @@
         border-radius: 20px;
         padding: 12px 23px;
     }
-    .mc-button [class*=mc-icon-]+span {
+    .yp-button [class*=yp-icon-]+span {
         margin-left: 5px;
     }
-    .mc-button[disabled] {
+    .yp-button[disabled] {
         cursor: default;
         background: #c9c9c9;
         border-color: #c9c9c9;

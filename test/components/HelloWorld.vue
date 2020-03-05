@@ -107,9 +107,13 @@
       </span>
     </yp-dialog>
     <yp-button class="dialog-button" type="primary" @click="timePickerShow=!timePickerShow">打开timePickerShow</yp-button>
-    <yp-date-picker mask :visible.sync="timePickerShow">
+    <yp-date-picker mask :visible.sync="timePickerShow"></yp-date-picker>
 
-    </yp-date-picker>
+    <yp-carousel height="300px">
+      <yp-carousel-item style="background: gray;height: 100%"></yp-carousel-item>
+      <yp-carousel-item style="background: white;height: 100%"></yp-carousel-item>
+      <yp-carousel-item style="background: red;height: 100%"></yp-carousel-item>
+    </yp-carousel>
   </div>
 </template>
 
