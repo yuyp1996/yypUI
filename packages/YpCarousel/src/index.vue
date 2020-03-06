@@ -1,54 +1,66 @@
 <template>
-    <div
-            @mouseenter.stop="handleMouseEnter"
-            @mouseleave.stop="handleMouseLeave">
+    <throttle :time="400" events="mousedown">
         <div
-                class="yp-carousel__container"
-                :style="{ height: height }">
-            <transition
-                    v-if="arrowDisplay"
-                    name="carousel-arrow-left">
-                <throttle :time="1000" events="click">
-                    <button
-                            type="button"
-                            v-show="(arrow === 'always' || 'hover') && (loop || activeIndex > 0)"
-                            @mouseenter="handleButtonEnter('left')"
-                            @mouseleave="handleButtonLeave"
-                            @click.stop="setActiveItem(activeIndex - 1)"
-                            class="el-carousel__arrow el-carousel__arrow--left">
-                        <i class="el-icon-arrow-left"></i>
-                    </button>
-                </throttle>
+                :class="carouselClasses"
+                @mouseenter.stop="handleMouseEnter"
+                @mouseleave.stop="handleMouseLeave"
+                @mousedown.stop="handleMouseDown"
+                @mousemove.stop="handleMouseMove"
+                @mouseup.stop="throttledMouseUp">
+            <div
+                    class="yp-carousel__container"
+                    :style="{ height: height }">
+                <transition
+                        v-if="arrowDisplay"
+                        name="carousel-arrow-left">
+                    <throttle :time="1000" events="click">
+                        <button
+                                type="button"
+                                v-show="(arrow === 'always' || 'hover') && (loop || activeIndex > 0)"
+                                @mouseenter="handleButtonEnter('left')"
+                                @mouseleave="handleButtonLeave"
+                                @click.stop="setActiveItem(activeIndex - 1)"
+                                class="yp-carousel__arrow yp-carousel__arrow--left">
+                        </button>
+                    </throttle>
 
-            </transition>
-            <transition
-                    v-if="arrowDisplay"
-                    name="carousel-arrow-right">
-                <button
-                        type="button"
-                        v-show="(arrow === 'always' || 'hover') && (loop || activeIndex < items.length - 1)"
-                        @mouseenter="handleButtonEnter('right')"
-                        @mouseleave="handleButtonLeave"
-                        @click.stop="setActiveItem(activeIndex + 1)"
-                        class="el-carousel__arrow el-carousel__arrow--right">
-                    <i class="el-icon-arrow-right"></i>
-                </button>
-            </transition>
-            <slot></slot>
+                </transition>
+                <transition
+                        v-if="arrowDisplay"
+                        name="carousel-arrow-right">
+                    <throttle :time="1000" events="click">
+                        <button
+                                type="button"
+                                v-show="(arrow === 'always' || 'hover') && (loop || activeIndex < items.length - 1)"
+                                @mouseenter="handleButtonEnter('right')"
+                                @mouseleave="handleButtonLeave"
+                                @click.stop="setActiveItem(activeIndex + 1)"
+                                class="yp-carousel__arrow yp-carousel__arrow--right">
+                        </button>
+                    </throttle>
+                </transition>
+                <slot></slot>
+            </div>
         </div>
-    </div>
+    </throttle>
 </template>
 
 <script>
+    import { addResizeListener, removeResizeListener } from '../../../utils/resize-event';
+    import { throttleFn } from '../../../utils/throttle';
     export default {
         name: "YpCarousel",
         data() {
             return {
                 items: [],
                 activeIndex: -1,
+                nextIndex: -1,
+                preIndex: -1,
                 containerWidth: 0,
                 timer: null,
-                hover: false
+                hover: false,
+                mousePosition: 0,
+                mouseMoveStart: false, // 鼠标开始移动
             };
         },
         props: {
@@ -104,7 +116,16 @@
             }
         },
         methods: {
+            carouselClasses() {
+                const classes = ['yp-carousel', 'yp-carousel--' + this.direction];
+                if (this.type === 'card') {
+                    classes.push('yp-carousel--card');
+                }
+                return classes;
+            },
+
             handleMouseEnter() {
+                this.mouseMoveStart = false;
                 this.hover = true;
                 this.pauseTimer();
             },
@@ -112,6 +133,44 @@
             handleMouseLeave() {
                 this.hover = false;
                 this.startTimer();
+                this.throttledMouseUp();
+            },
+
+            handleMouseDown(e) {
+                const length = this.items.length;
+                this.nextIndex = this.activeIndex + 2 > length ?
+                    0 : this.activeIndex + 1;
+                this.preIndex = this.activeIndex - 1 < 0 ?
+                    length - 1 : this.activeIndex - 1;
+                this.mousePosition = this.parentDirection === 'vertical' ?
+                    e.offsetY : e.offsetX;
+                this.mouseMoveStart = true;
+            },
+
+            handleMouseMove(e) {
+                if (!this.mouseMoveStart) return;
+                const distance = this.parentDirection === 'vertical' ?
+                    e.offsetY - this.mousePosition :
+                    e.offsetX - this.mousePosition;
+                this.items[this.activeIndex].animating = false;
+                this.items[this.nextIndex].animating = false;
+                this.items[this.preIndex].animating = false;
+                this.items[this.activeIndex].translate = this.items[this.activeIndex].translate + distance;
+                this.items[this.nextIndex].translate = this.items[this.nextIndex].translate + distance;
+                this.items[this.preIndex].translate = this.items[this.preIndex].translate + distance;
+                this.mousePosition = this.parentDirection === 'vertical' ?
+                    e.offsetY : e.offsetX;
+            },
+
+            handleMouseUp() {
+                this.mouseMoveStart = false;
+                const nowTranslate = this.items[this.activeIndex].translate;
+                if (Math.abs(nowTranslate) > this.$parent.$el.offsetWidth / 5) {
+                    const nextIndex = nowTranslate > 0 ? this.activeIndex - 1 : this.activeIndex + 1;
+                    this.setActiveItem(nextIndex);
+                } else {
+                    this.resetItemPosition(this.activeIndex);
+                }
             },
 
             itemInStage(item, index) {
@@ -199,10 +258,12 @@
             }
         },
         created() {
+            this.throttledMouseUp = throttleFn(this.handleMouseUp, 300, this);
         },
         mounted() {
             this.updateItems();
             this.$nextTick(() => {
+                addResizeListener(this.$el, this.resetItemPosition);
                 if (this.initialIndex < this.items.length && this.initialIndex >= 0) {
                     this.activeIndex = this.initialIndex;
                 }
@@ -210,6 +271,7 @@
             });
         },
         beforeDestroy() {
+            if (this.$el) removeResizeListener(this.$el, this.resetItemPosition);
             this.pauseTimer();
         }
     }

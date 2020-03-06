@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "description": "基于VUE的UI库",
   "main": "lib/yypUi.umd.min.js",
-  "keywords": ["yypUi", "UI"],
+  "keywords": [
+    "yypUi",
+    "UI"
+  ],
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -22,6 +25,7 @@
     "babel-eslint": "^10.0.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
+    "resize-observer-polyfill": "^1.5.1",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

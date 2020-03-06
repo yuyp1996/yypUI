@@ -1,8 +1,12 @@
 <template>
     <div
+        v-show="ready"
         class="yp-carousel-item"
         :class="{
-            'is-animating': animating
+            'is-animating': animating,
+            'is-in-stage': inStage,
+            'is-active': active,
+            'is-pre': isPre
         }"
         @click="handleItemClick"
         :style="itemStyle">
@@ -29,13 +33,13 @@
         },
         data() {
           return {
-              hover: false,
               translate: 0,
               scale: 1,
               active: false,
               ready: false,
               inStage: false,
-              animating: false
+              animating: false,
+              isPre: false, // 是否是前一个
           }
         },
         methods: {
@@ -74,9 +78,11 @@
                 const length = this.$parent.items.length;
                 if (parentType !== 'card' && oldIndex !== undefined) {
                     this.animating = index === activeIndex || index === oldIndex;
+                    this.isPre = index !== activeIndex && index === oldIndex;
                 }
                 if (index !== activeIndex && length > 2 && this.$parent.loop) {
                     index = this.processIndex(index, activeIndex, length);
+                    this.animating = index === activeIndex - 1 || index === activeIndex + 1;
                 }
                 if (parentType === 'card') {
                     if (parentDirection === 'vertical') {
@@ -137,8 +143,21 @@
         display: inline-block;
         overflow: hidden;
         z-index: 0;
+        user-select: none;
+        -webkit-user-select:none;
+        -moz-user-select: none;
     }
     .yp-carousel-item.is-animating {
         transition: transform .4s ease-in-out;
+    }
+    .yp-carousel-item.is-in-stage {
+        cursor: pointer;
+        z-index: 1;
+    }
+    .yp-carousel-item.is-pre {
+        z-index: 2;
+    }
+    .yp-carousel-item.is-active {
+        z-index: 3;
     }
 </style>
